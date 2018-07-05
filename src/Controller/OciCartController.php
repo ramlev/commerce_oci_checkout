@@ -104,6 +104,7 @@ class OciCartController extends CartController {
       }
       $items_with_fields[] = $row;
     }
+    $this->moduleHandler->alter('commerce_oci_item_rows', $items_with_fields, $order);
     $form = [];
     // Create the default "base" fields.
     $fields = [
