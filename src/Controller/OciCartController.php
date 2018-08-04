@@ -2,11 +2,15 @@
 
 namespace Drupal\commerce_oci_checkout\Controller;
 
+use Drupal\commerce\Context;
 use Drupal\commerce_cart\CartProviderInterface;
 use Drupal\commerce_cart\Controller\CartController;
+use Drupal\commerce_price\Resolver\ChainPriceResolverInterface;
+use Drupal\commerce_store\CurrentStoreInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 
@@ -23,14 +27,45 @@ class OciCartController extends CartController {
   protected $attributeBag;
 
   /**
+   * Chain price resolver.
+   *
+   * @var \Drupal\commerce_price\Resolver\ChainPriceResolver
+   */
+  protected $chainPriceResolver;
+
+  /**
+   * Current user service.
+   *
+   * @var \Drupal\Core\Session\AccountProxy
+   */
+  protected $currentUser;
+
+  /**
+   * Current store service.
+   *
+   * @var \Drupal\commerce_store\CurrentStore
+   */
+  protected $currentStore;
+
+  /**
    * OciCartController constructor.
    */
-  public function __construct(CartProviderInterface $cart_provider, AttributeBagInterface $attribute_bag, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
+  public function __construct(CartProviderInterface $cart_provider,
+      AttributeBagInterface $attribute_bag,
+      EntityTypeManagerInterface $entity_type_manager,
+      ConfigFactoryInterface $config_factory,
+      ModuleHandlerInterface $module_handler,
+      ChainPriceResolverInterface $chain_price_resolver,
+      AccountProxyInterface $current_user,
+      CurrentStoreInterface $current_store) {
     parent::__construct($cart_provider);
     $this->attributeBag = $attribute_bag;
     $this->entityTypeManager = $entity_type_manager;
     $this->configFactory = $config_factory;
     $this->moduleHandler = $module_handler;
+    $this->chainPriceResolver = $chain_price_resolver;
+    $this->currentUser = $current_user;
+    $this->currentStore = $current_store;
   }
 
   /**
@@ -42,7 +77,10 @@ class OciCartController extends CartController {
       $container->get('session.attribute_bag'),
       $container->get('entity_type.manager'),
       $container->get('config.factory'),
-      $container->get('module_handler')
+      $container->get('module_handler'),
+      $container->get('commerce_price.chain_price_resolver'),
+      $container->get('current_user'),
+      $container->get('commerce_store.current_store')
     );
   }
 
@@ -83,15 +121,19 @@ class OciCartController extends CartController {
         if ($product->body && !$product->get('body')->isEmpty()) {
           $description = $product->get('body')->first()->getString();
         }
-        $price = $entity->getPrice();
+        // Let the resolver convert this.
+        $context = new Context($this->currentUser, $this->currentStore->getStore());
+        // Create a temporary product variation.
+        $variation = $this->entityTypeManager->getStorage('commerce_product_variation')->loadFromContext($product);
+        $price_resolved = $this->chainPriceResolver->resolve($variation, 1, $context);
         $row = [
           'QUANTITY' => $qty,
           'DESCRIPTION' => $description,
           'VENDOR' => $site_config->get('name'),
           // @todo: I have no idea what this is. Figure out?
           'UNIT' => 'EA',
-          'PRICE' => $price->getNumber(),
-          'CURRENCY' => $price->getCurrencyCode(),
+          'PRICE' => $price_resolved->getNumber(),
+          'CURRENCY' => $price_resolved->getCurrencyCode(),
           'PRICE_UNIT' => 1,
           'VENDORMAT' => $entity->getSku(),
           'EXT_PRODUCT_ID' => $entity->getSku(),
