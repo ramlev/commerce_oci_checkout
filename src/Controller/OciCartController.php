@@ -143,8 +143,8 @@ class OciCartController extends CartController {
         ];
         $sku = $entity->getSku();
         $this->moduleHandler->alter('commerce_oci_checkout', $row, $sku, $product);
+        $items_with_fields[] = $row;
       }
-      $items_with_fields[] = $row;
     }
     $this->moduleHandler->alter('commerce_oci_item_rows', $items_with_fields, $order);
     $form = [];
