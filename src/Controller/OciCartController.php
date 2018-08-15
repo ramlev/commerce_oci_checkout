@@ -5,6 +5,7 @@ namespace Drupal\commerce_oci_checkout\Controller;
 use Drupal\commerce\Context;
 use Drupal\commerce_cart\CartProviderInterface;
 use Drupal\commerce_cart\Controller\CartController;
+use Drupal\commerce_order\PriceCalculator;
 use Drupal\commerce_price\Resolver\ChainPriceResolverInterface;
 use Drupal\commerce_store\CurrentStoreInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -25,13 +26,6 @@ class OciCartController extends CartController {
    * @var \Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface
    */
   protected $attributeBag;
-
-  /**
-   * Chain price resolver.
-   *
-   * @var \Drupal\commerce_price\Resolver\ChainPriceResolver
-   */
-  protected $chainPriceResolver;
 
   /**
    * Current user service.
@@ -55,17 +49,17 @@ class OciCartController extends CartController {
       EntityTypeManagerInterface $entity_type_manager,
       ConfigFactoryInterface $config_factory,
       ModuleHandlerInterface $module_handler,
-      ChainPriceResolverInterface $chain_price_resolver,
       AccountProxyInterface $current_user,
-      CurrentStoreInterface $current_store) {
+      CurrentStoreInterface $current_store,
+      PriceCalculator $price_calculator) {
     parent::__construct($cart_provider);
     $this->attributeBag = $attribute_bag;
     $this->entityTypeManager = $entity_type_manager;
     $this->configFactory = $config_factory;
     $this->moduleHandler = $module_handler;
-    $this->chainPriceResolver = $chain_price_resolver;
     $this->currentUser = $current_user;
     $this->currentStore = $current_store;
+    $this->priceCalculator = $price_calculator;
   }
 
   /**
@@ -78,9 +72,9 @@ class OciCartController extends CartController {
       $container->get('entity_type.manager'),
       $container->get('config.factory'),
       $container->get('module_handler'),
-      $container->get('commerce_price.chain_price_resolver'),
       $container->get('current_user'),
-      $container->get('commerce_store.current_store')
+      $container->get('commerce_store.current_store'),
+      $container->get('commerce_order.price_calculator')
     );
   }
 
@@ -105,6 +99,7 @@ class OciCartController extends CartController {
     }
     $site_config = $this->configFactory->get('system.site');
     $items_with_fields = [];
+    $adjustments = ['promotion'];
     foreach ($cart_ids as $id) {
       /** @var \Drupal\commerce_order\Entity\Order $order */
       $order = $this->entityTypeManager->getStorage('commerce_order')->load($id);
@@ -125,7 +120,8 @@ class OciCartController extends CartController {
         $context = new Context($this->currentUser, $this->currentStore->getStore());
         // Create a temporary product variation.
         $variation = $this->entityTypeManager->getStorage('commerce_product_variation')->loadFromContext($product);
-        $price_resolved = $this->chainPriceResolver->resolve($variation, 1, $context);
+        $price_result = $this->priceCalculator->calculate($variation, 1, $context, $adjustments);
+        $price_resolved = $price_result->getCalculatedPrice();
         $row = [
           'QUANTITY' => $qty,
           'DESCRIPTION' => $description,
@@ -142,7 +138,7 @@ class OciCartController extends CartController {
           'MATGROUP' => '',
         ];
         $sku = $entity->getSku();
-        $this->moduleHandler->alter('commerce_oci_checkout', $row, $sku, $product);
+        $this->moduleHandler->alter('commerce_oci_checkout_row', $row, $sku, $product);
         $items_with_fields[] = $row;
       }
     }
