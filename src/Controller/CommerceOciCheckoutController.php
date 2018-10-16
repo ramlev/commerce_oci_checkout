@@ -79,6 +79,8 @@ class CommerceOciCheckoutController extends ControllerBase {
    * Start session.
    */
   public function ociStart(Request $request) {
+    // @todo: Use something with proper dependency injection.
+    user_logout();
     $variables = [];
     $fields = [
       'hook_url',
@@ -123,6 +125,7 @@ class CommerceOciCheckoutController extends ControllerBase {
     }
     // Store the hook url.
     $this->attributeBag->set(self::HOOK_URL_ATTRIBUTE_NAME, $variables['hook_url']);
+    // @todo: Use something with proper dependency injection.
     user_login_finalize($account);
     return new RedirectResponse('/');
   }
