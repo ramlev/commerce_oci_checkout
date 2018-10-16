@@ -2,5 +2,5 @@ name: Commerce OCI Checkout
 core: 8.x
 type: module
 dependencies:
-  - commerce
-  - commerce_cart
+  - commerce:commerce
+  - commerce:commerce_cart
