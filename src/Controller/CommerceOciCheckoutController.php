@@ -79,8 +79,8 @@ class CommerceOciCheckoutController extends ControllerBase {
    * Start session.
    */
   public function ociStart(Request $request) {
-    // @todo: Use something with proper dependency injection.
-    user_logout();
+    // Clear all of the things we know we will end up using.
+    $this->attributeBag->clear();
     $variables = [];
     $fields = [
       'hook_url',
