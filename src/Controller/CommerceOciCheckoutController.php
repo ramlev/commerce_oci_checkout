@@ -114,7 +114,7 @@ class CommerceOciCheckoutController extends ControllerBase {
       ->loadByProperties([
         'mail' => $variables['username'],
       ])) {
-      throw new AccessDeniedHttpException('You have to supply HOOK_URL, USERNAME and PASSWORD');
+      throw new AccessDeniedHttpException('No user found with those credentials');
     }
     /** @var \Drupal\Core\Session\AccountInterface $account */
     $account = reset($accounts);
