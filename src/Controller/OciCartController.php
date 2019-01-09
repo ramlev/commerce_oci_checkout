@@ -88,6 +88,7 @@ class OciCartController extends CartController {
     }
     // So what we are going to do now, is remove the actions, and create a
     // new form with twig, which the user then can submit.
+    $cart_ids = [];
     foreach ($page as $delta => $element) {
       if (!is_array($element)) {
         continue;
@@ -96,6 +97,9 @@ class OciCartController extends CartController {
         continue;
       }
       $cart_ids[] = $delta;
+    }
+    if (empty($cart_ids)) {
+      return $page;
     }
     $site_config = $this->configFactory->get('system.site');
     $items_with_fields = [];
