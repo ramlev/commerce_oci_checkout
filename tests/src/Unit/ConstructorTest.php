@@ -7,6 +7,7 @@ use Drupal\commerce_oci_checkout\CartProvider;
 use Drupal\commerce_store\CurrentStoreInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Tests\UnitTestCase;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 
 /**
@@ -14,7 +15,7 @@ use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
  *
  * @group commerce_oci_checkout
  */
-class ConstructorTest extends \PHPUnit_Framework_TestCase {
+class ConstructorTest extends UnitTestCase {
 
   /**
    * Test that we can construct the thing, so it does not break on updates.
