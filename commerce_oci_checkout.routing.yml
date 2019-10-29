@@ -12,4 +12,4 @@ commerce_oci_checkout.session_start:
     _title: 'OCI'
     _controller: '\Drupal\commerce_oci_checkout\Controller\CommerceOciCheckoutController::ociStart'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
