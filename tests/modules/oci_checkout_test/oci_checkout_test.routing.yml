@@ -1,0 +1,7 @@
+oci_checkout_test.callback:
+  path: '/oci-callback'
+  defaults:
+    _title: 'Checkout'
+    _controller: '\Drupal\oci_checkout_test\Controller\CallbackController::callback'
+  requirements:
+    _access: 'TRUE'
