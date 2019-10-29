@@ -43,6 +43,13 @@ class CommerceOciCheckoutController extends ControllerBase {
   protected $attributeBag;
 
   /**
+   * User auth.
+   *
+   * @var \Drupal\user\UserAuthInterface
+   */
+  protected $userAuth;
+
+  /**
    * The flood service.
    *
    * @var \Drupal\Core\Flood\FloodInterface

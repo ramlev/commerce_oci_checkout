@@ -41,6 +41,13 @@ class OciCartController extends CartController {
   protected $currentStore;
 
   /**
+   * Price calculator.
+   *
+   * @var \Drupal\commerce_order\PriceCalculator
+   */
+  protected $priceCalculator;
+
+  /**
    * OciCartController constructor.
    */
   public function __construct(CartProviderInterface $cart_provider,
