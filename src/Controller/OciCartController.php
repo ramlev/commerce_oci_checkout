@@ -6,7 +6,6 @@ use Drupal\commerce\Context;
 use Drupal\commerce_cart\CartProviderInterface;
 use Drupal\commerce_cart\Controller\CartController;
 use Drupal\commerce_order\PriceCalculator;
-use Drupal\commerce_price\Resolver\ChainPriceResolverInterface;
 use Drupal\commerce_store\CurrentStoreInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
