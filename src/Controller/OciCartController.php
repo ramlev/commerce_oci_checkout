@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 
 /**
- * Class OciCartController.
+ * The controller for the cart.
  */
 class OciCartController extends CartController {
 
@@ -136,14 +136,14 @@ class OciCartController extends CartController {
           'QUANTITY' => $qty,
           'DESCRIPTION' => $description,
           'VENDOR' => $site_config->get('name'),
-          // @todo: I have no idea what this is. Figure out?
+          // @todo I have no idea what this is. Figure out?
           'UNIT' => 'EA',
           'PRICE' => $price_resolved->getNumber(),
           'CURRENCY' => $price_resolved->getCurrencyCode(),
           'PRICE_UNIT' => 1,
           'VENDORMAT' => $entity->getSku(),
           'EXT_PRODUCT_ID' => $entity->getSku(),
-          // @todo: No idea what this is. Figure out?
+          // @todo No idea what this is. Figure out?
           'LEADTIME' => 10,
           'MATGROUP' => '',
         ];

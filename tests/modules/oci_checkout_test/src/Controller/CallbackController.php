@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class CallbackController.
+ * Controller to return all of the content in the OCI request.
  */
 class CallbackController extends ControllerBase {
 

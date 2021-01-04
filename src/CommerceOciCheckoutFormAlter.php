@@ -12,7 +12,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 
 /**
- * CommerceOciCheckoutFormAlter service.
+ * Service to alter the checkout form.
  */
 class CommerceOciCheckoutFormAlter {
 

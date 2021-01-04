@@ -11,7 +11,7 @@ use Drupal\Tests\UnitTestCase;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 
 /**
- * Class ConstructorTest.
+ * Test that the constructor of the cart provider works.
  *
  * @group commerce_oci_checkout
  */

@@ -125,14 +125,14 @@ class CommerceOciCheckoutController extends ControllerBase {
     }
     /** @var \Drupal\Core\Session\AccountInterface $account */
     $account = reset($accounts);
-    // @todo: Check if user is blocked.
+    // @todo Check if user is blocked.
     // Try to authenticate.
     if (!$uid = $this->userAuth->authenticate($account->getAccountName(), $variables['password'])) {
       throw new AccessDeniedHttpException('Wrong username/pass combination');
     }
     // Store the hook url.
     $this->attributeBag->set(self::HOOK_URL_ATTRIBUTE_NAME, $variables['hook_url']);
-    // @todo: Use something with proper dependency injection.
+    // @todo Use something with proper dependency injection.
     user_login_finalize($account);
     return new RedirectResponse('/');
   }
