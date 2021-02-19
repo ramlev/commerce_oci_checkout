@@ -28,8 +28,10 @@ class ConstructorTest extends UnitTestCase {
     $mock_attr = $this->createMock(AttributeBagInterface::class);
     // Now try to construct our class, and then we just assert something, to
     // make sure the test runs.
-    new CartProvider($mock_etm, $mock_current_store, $mock_account, $mock_cart, $mock_attr);
-    $this->assertEquals(TRUE, TRUE);
+    $provider = new CartProvider($mock_etm, $mock_current_store, $mock_account, $mock_cart, $mock_attr);
+    self::assertEquals(TRUE, TRUE);
+    // Let's also make sure we can use the method to add things to the cart.
+    $provider->loadCartData();
   }
 
 }

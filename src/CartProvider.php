@@ -36,9 +36,9 @@ class CartProvider extends CartProviderOriginal {
   /**
    * {@inheritdoc}
    */
-  public function loadCartData(AccountInterface $account = NULL) {
+  public function loadCartData(AccountInterface $account = NULL, StoreInterface $store = NULL) {
     if ($this->shouldUseParent()) {
-      return parent::loadCartData($account);
+      return parent::loadCartData($account, $store);
     }
     $data = [];
     if ($cart = $this->attributeBag->get(self::ATTRIBUTE_KEY)) {
