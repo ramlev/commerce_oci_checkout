@@ -1,0 +1,11 @@
+{
+    "name": "drupal/commerce_oci_checkout",
+    "type": "drupal-module",
+    "description": "Commerce OCI checkout",
+    "homepage": "http://drupal.org/project/commerce_oci_checkout",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "drupal/commerce": "2.22.0"
+    },
+    "minimum-stability": "dev"
+}
