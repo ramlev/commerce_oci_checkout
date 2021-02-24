@@ -53,6 +53,31 @@ class CartProvider extends CartProviderOriginal {
   /**
    * {@inheritdoc}
    */
+  public function getCartId($order_type, StoreInterface $store = NULL, AccountInterface $account = NULL) {
+    $id = parent::getCartId($order_type, $store, $account);
+    if ($this->shouldUseParent()) {
+      return $id;
+    }
+    // Depending on the commerce version, this can actually be a tiny bit
+    // different for our types of carts. So first try the parent method (which
+    // might return an ID) and then if not, let's also try to find it
+    // "manually".
+    if ($id) {
+      return $id;
+    }
+    $cart_data = $this->loadCartData($account, $store);
+    foreach ($cart_data as $order_id => $cart) {
+      if ($cart['type'] !== $order_type) {
+        continue;
+      }
+      return $order_id;
+    }
+    return $id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function createCart($order_type, StoreInterface $store = NULL, AccountInterface $account = NULL) {
     if ($this->shouldUseParent()) {
       return parent::createCart($order_type, $store, $account);
