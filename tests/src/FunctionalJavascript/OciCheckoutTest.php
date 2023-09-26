@@ -32,7 +32,7 @@ class OciCheckoutTest extends CommerceWebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp() : void {
     parent::setUp();
 
     $variation = $this->createEntity('commerce_product_variation', [
@@ -44,7 +44,6 @@ class OciCheckoutTest extends CommerceWebDriverTestBase {
       ],
     ]);
 
-    /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
     $this->product = $this->createEntity('commerce_product', [
       'type' => 'default',
       'title' => 'My product',
@@ -95,8 +94,8 @@ class OciCheckoutTest extends CommerceWebDriverTestBase {
     // Should not decode to false.
     $this->assertTrue((bool) $json);
     // Should be 2 items of this SKU.
-    $this->assertEqual($json->{"NEW_ITEM-QUANTITY"}->{"1"}, "2.00");
-    $this->assertEqual($json->{"NEW_ITEM-PRICE"}->{"1"}, '39.990000');
+    $this->assertEquals($json->{"NEW_ITEM-QUANTITY"}->{"1"}, "2.00");
+    $this->assertEquals($json->{"NEW_ITEM-PRICE"}->{"1"}, '39.990000');
   }
 
 }

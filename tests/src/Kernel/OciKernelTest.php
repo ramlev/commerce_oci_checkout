@@ -21,24 +21,46 @@ class OciKernelTest extends CartKernelTestBase {
   protected $product;
 
   /**
+   * Variation1.
+   *
+   * @var \Drupal\commerce_product\Entity\ProductVariationInterface
+   */
+  protected $variation1;
+
+  /**
+   * Variation2.
+   *
+   * @var \Drupal\commerce_product\Entity\ProductVariationInterface
+   */
+  protected $variation2;
+
+  /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'commerce_oci_checkout',
   ];
 
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp() : void {
     parent::setUp();
 
     $variation_storage = $this->entityTypeManager->getStorage('commerce_product_variation');
+    $product_storage = $this->entityTypeManager->getStorage('commerce_product');
+    $product = $product_storage->create([
+      'type' => 'default',
+      'title' => 'product',
+    ]);
+    $product->save();
 
     $variation1 = $variation_storage->create([
+      'product_id' => $product,
       'type' => 'default',
+      'title' => 'Variation 1',
       'sku' => strtolower($this->randomMachineName()),
       'price' => [
         'number' => '39.99',
@@ -47,7 +69,9 @@ class OciKernelTest extends CartKernelTestBase {
     ]);
     $variation1->save();
     $variation2 = $variation_storage->create([
+      'product_id' => $product,
       'type' => 'default',
+      'title' => 'Variation 2',
       'sku' => strtolower($this->randomMachineName()),
       'price' => [
         'number' => '22.33',
