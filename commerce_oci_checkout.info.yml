@@ -1,5 +1,5 @@
 name: Commerce OCI Checkout
-core_version_requirement: ^8.7.7 || ^9
+core_version_requirement: ^8.7.7 || ^9 || ^10
 description: Makes it possible to do Open Catalog Interface checkout on a commerce site.
 type: module
 dependencies:
