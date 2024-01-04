@@ -7,6 +7,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Flood\FloodInterface;
+use Drupal\Core\Url;
 use Drupal\user\UserAuthInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -134,7 +135,11 @@ class CommerceOciCheckoutController extends ControllerBase {
     $this->attributeBag->set(self::HOOK_URL_ATTRIBUTE_NAME, $variables['hook_url']);
     // @todo Use something with proper dependency injection.
     user_login_finalize($account);
-    return new RedirectResponse('/');
+    $url = Url::fromRoute('<front>', [], [
+      'absolute' => TRUE,
+    ])->toString();
+
+    return new RedirectResponse($url);
   }
 
 }
