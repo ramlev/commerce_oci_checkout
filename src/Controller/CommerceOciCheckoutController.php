@@ -115,7 +115,7 @@ class CommerceOciCheckoutController extends ControllerBase {
     }
     $flood_config = $this->config('user.flood');
     if (!$this->flood->isAllowed('user.failed_login_ip', $flood_config->get('ip_limit'), $flood_config->get('ip_window'))) {
-      throw new AccessDeniedHttpException('You have to supply HOOK_URL, USERNAME and PASSWORD');
+      throw new AccessDeniedHttpException('Login temporarily blocked because of too many failed attempts.');
     }
     // See if we can find the user by this email.
     if (!$accounts = $this->entityTypeManager->getStorage('user')
