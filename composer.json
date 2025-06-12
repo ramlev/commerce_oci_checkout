@@ -1,5 +1,5 @@
 {
-    "name": "drupal/commerce_oci_checkout",
+    "name": "ramlev/commerce_oci_checkout",
     "type": "drupal-module",
     "description": "Commerce OCI checkout",
     "homepage": "http://drupal.org/project/commerce_oci_checkout",
