@@ -12,7 +12,7 @@ use Drupal\user\UserAuthInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
@@ -37,11 +37,11 @@ class CommerceOciCheckoutController extends ControllerBase {
   protected $moduleHandler;
 
   /**
-   * The session.
+   * Attribute bag.
    *
-   * @var \Symfony\Component\HttpFoundation\Session\Session
+   * @var \Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag
    */
-  protected $session;
+  protected $attributeBag;
 
   /**
    * User auth.
@@ -60,11 +60,11 @@ class CommerceOciCheckoutController extends ControllerBase {
   /**
    * Constructs the controller object.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, ConfigFactoryInterface $config_factory, Session $session, UserAuthInterface $user_auth, FloodInterface $flood) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, ConfigFactoryInterface $config_factory, AttributeBag $attribute_bag, UserAuthInterface $user_auth, FloodInterface $flood) {
     $this->entityTypeManager = $entity_type_manager;
     $this->moduleHandler = $module_handler;
     $this->configFactory = $config_factory;
-    $this->session = $session;
+    $this->attributeBag = $attribute_bag;
     $this->userAuth = $user_auth;
     $this->flood = $flood;
   }
@@ -77,7 +77,7 @@ class CommerceOciCheckoutController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('module_handler'),
       $container->get('config.factory'),
-      $container->get('session'),
+      $container->get('session.attribute_bag'),
       $container->get('user.auth'),
       $container->get('flood')
     );
@@ -88,7 +88,7 @@ class CommerceOciCheckoutController extends ControllerBase {
    */
   public function ociStart(Request $request) {
     // Clear all of the things we know we will end up using.
-    $this->session->clear();
+    $this->attributeBag->clear();
     $variables = [];
     $fields = [
       'hook_url',
@@ -132,7 +132,7 @@ class CommerceOciCheckoutController extends ControllerBase {
       throw new AccessDeniedHttpException('Wrong username/pass combination');
     }
     // Store the hook url.
-    $this->session->set(self::HOOK_URL_ATTRIBUTE_NAME, $variables['hook_url']);
+    $this->attributeBag->set(self::HOOK_URL_ATTRIBUTE_NAME, $variables['hook_url']);
     // @todo Use something with proper dependency injection.
     user_login_finalize($account);
     $url = Url::fromRoute('<front>', [], [

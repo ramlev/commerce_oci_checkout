@@ -10,6 +10,7 @@ use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Service to alter the checkout form.
@@ -33,11 +34,11 @@ class CommerceOciCheckoutFormAlter {
   protected $currentUser;
 
   /**
-   * Attr bag.
+   * The session
    *
-   * @var \Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface
+   * @var \Symfony\Component\HttpFoundation\Session\Session
    */
-  protected $attributeBag;
+  protected $session;
 
   /**
    * Current route.
@@ -49,10 +50,10 @@ class CommerceOciCheckoutFormAlter {
   /**
    * Constructs a CommerceOciCheckoutFormAlter object.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, AccountProxyInterface $current_user, AttributeBagInterface $attribute_bag, CurrentRouteMatch $current_route) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, AccountProxyInterface $current_user, Session $session, CurrentRouteMatch $current_route) {
     $this->productStorage = $entity_type_manager->getStorage('commerce_product');
     $this->currentUser = $current_user;
-    $this->attributeBag = $attribute_bag;
+    $this->session = $session;
     $this->currentRoute = $current_route;
   }
 
@@ -63,7 +64,7 @@ class CommerceOciCheckoutFormAlter {
     if ($this->currentUser->hasPermission('use commerce_oci_checkout')) {
       // See if we can find the hook url in the attribute bag. If we can not,
       // then the next step will be really hard.
-      if (!$url = $this->attributeBag->get(CommerceOciCheckoutController::HOOK_URL_ATTRIBUTE_NAME)) {
+      if (!$url = $this->session->get(CommerceOciCheckoutController::HOOK_URL_ATTRIBUTE_NAME)) {
         return;
       }
       // Redirect to OCI.

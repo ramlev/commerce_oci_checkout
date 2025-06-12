@@ -24,7 +24,7 @@ class OciCheckoutTest extends CommerceWebDriverTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'commerce_oci_checkout',
     'oci_checkout_test',
   ];

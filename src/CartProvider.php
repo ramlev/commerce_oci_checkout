@@ -10,6 +10,7 @@ use Drupal\commerce_store\Entity\StoreInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Custom cart provider.
@@ -19,18 +20,18 @@ class CartProvider extends CartProviderOriginal {
   const ATTRIBUTE_KEY = 'oci_cart';
 
   /**
-   * Attribute bag.
+   * The session
    *
-   * @var \Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface
+   * @var \Symfony\Component\HttpFoundation\Session\Session
    */
-  protected $attributeBag;
+  protected $session;
 
   /**
    * CartProvider constructor.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, CurrentStoreInterface $current_store, AccountInterface $current_user, CartSessionInterface $cart_session, AttributeBagInterface $attribute_bag) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, CurrentStoreInterface $current_store, AccountInterface $current_user, CartSessionInterface $cart_session, Session $session) {
     parent::__construct($entity_type_manager, $current_store, $current_user, $cart_session);
-    $this->attributeBag = $attribute_bag;
+    $this->session = $session;
   }
 
   /**
@@ -41,7 +42,7 @@ class CartProvider extends CartProviderOriginal {
       return parent::loadCartData($account, $store);
     }
     $data = [];
-    if ($cart = $this->attributeBag->get(self::ATTRIBUTE_KEY)) {
+    if ($cart = $this->session->get(self::ATTRIBUTE_KEY)) {
       $data[$cart->id()] = [
         'type' => $cart->bundle(),
         'store_id' => $cart->getStoreId(),
@@ -99,7 +100,7 @@ class CartProvider extends CartProviderOriginal {
       'cart' => TRUE,
     ]);
     $cart->save();
-    $this->attributeBag->set(self::ATTRIBUTE_KEY, $cart);
+    $this->session->set(self::ATTRIBUTE_KEY, $cart);
     return $cart;
   }
 

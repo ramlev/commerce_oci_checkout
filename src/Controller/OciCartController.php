@@ -12,7 +12,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * The controller for the cart.
@@ -20,11 +20,11 @@ use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 class OciCartController extends CartController {
 
   /**
-   * Attribute bag.
+   * The session.
    *
-   * @var \Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface
+   * @var \Symfony\Component\HttpFoundation\Session\Session
    */
-  protected $attributeBag;
+  protected $session;
 
   /**
    * Current user service.
@@ -51,15 +51,15 @@ class OciCartController extends CartController {
    * OciCartController constructor.
    */
   public function __construct(CartProviderInterface $cart_provider,
-      AttributeBagInterface $attribute_bag,
+      Session $session,
       EntityTypeManagerInterface $entity_type_manager,
       ConfigFactoryInterface $config_factory,
       ModuleHandlerInterface $module_handler,
       AccountProxyInterface $current_user,
       CurrentStoreInterface $current_store,
       PriceCalculator $price_calculator) {
-    parent::__construct($cart_provider);
-    $this->attributeBag = $attribute_bag;
+    $this->cartProvider = $cart_provider;
+    $this->session = $session;
     $this->entityTypeManager = $entity_type_manager;
     $this->configFactory = $config_factory;
     $this->moduleHandler = $module_handler;
@@ -74,7 +74,7 @@ class OciCartController extends CartController {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('commerce_cart.cart_provider'),
-      $container->get('session.attribute_bag'),
+      $container->get('session'),
       $container->get('entity_type.manager'),
       $container->get('config.factory'),
       $container->get('module_handler'),
@@ -89,7 +89,7 @@ class OciCartController extends CartController {
    */
   public function cartPage() {
     $page = parent::cartPage();
-    if (!$url = $this->attributeBag->get(CommerceOciCheckoutController::HOOK_URL_ATTRIBUTE_NAME)) {
+    if (!$url = $this->session->get(CommerceOciCheckoutController::HOOK_URL_ATTRIBUTE_NAME)) {
       return $page;
     }
     // So what we are going to do now, is remove the actions, and create a
